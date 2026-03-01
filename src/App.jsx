@@ -6,13 +6,13 @@ import { useDebounce } from "react-use";
 import { updateSearchCount, getTrendingMovies } from "./appwrite.js";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = import.meta.env.VITE_TMDB_API_URL;
+const API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
 
 const API_OPTIONS = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: `Bearer ${API_KEY}`,
+    Authorization: `Bearer ${API_TOKEN}`,
   },
 };
 const App = () => {
