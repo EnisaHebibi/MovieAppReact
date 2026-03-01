@@ -83,7 +83,7 @@ const App = () => {
         <header>
           <img src="./hero.png" alt="Hero " />
           <h1>
-            LOVE <span className="text-gradient">YOU </span>NURA
+            LOVE <span className="text-gradient">YOU </span>balashkooooooooo
           </h1>
           {/* <h1>
             Find <span className="text-gradient">Movies </span>You'll Enjoy
