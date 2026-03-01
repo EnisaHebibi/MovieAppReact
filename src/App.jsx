@@ -6,13 +6,13 @@ import { useDebounce } from "react-use";
 import { updateSearchCount, getTrendingMovies } from "./appwrite.js";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
-const API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
+const API_KEY = import.meta.env.VITE_TMDB_API_TOKEN;
 
 const API_OPTIONS = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: `Bearer ${API_TOKEN}`,
+    Authorization: `Bearer ${API_KEY}`,
   },
 };
 const App = () => {
@@ -83,9 +83,12 @@ const App = () => {
         <header>
           <img src="./hero.png" alt="Hero " />
           <h1>
+            LOVE <span className="text-gradient">YOU </span>ISRA
+          </h1>
+          {/* <h1>
             Find <span className="text-gradient">Movies </span>You'll Enjoy
             Without the Hassle
-          </h1>
+          </h1> */}
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
