@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Search from "./components/Search";
 import SpinnerEmpty from "./components/SpinnerEmpty";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
-import { getTrendingMovies } from "./appwrite.js";
+import { updateSearchCount, getTrendingMovies } from "./appwrite.js";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_TOKEN;
@@ -24,6 +24,7 @@ const App = () => {
   const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("popularity"); // popularity | rating | date
+  const trackedSearchesRef = useRef(new Set());
 
   useDebounce(() => setDebounceSearchTerm(searchTerm), 700, [searchTerm]);
 
@@ -63,15 +64,6 @@ const App = () => {
       // if (query && data.results.length > 0) {
       //   await updateSearchCount(query, data.results[0]);
       // }
-      <select
-        value={sortBy}
-        onChange={(e) => setSortBy(e.target.value)}
-        className="mb-4 rounded border p-2"
-      >
-        <option value="popularity">Popular</option>
-        <option value="rating">Top Rated</option>
-        <option value="date">Newest</option>
-      </select>;
 
       setMovieList((prev) =>
         page === 1 ? data.results : [...prev, ...data.results],
@@ -83,6 +75,24 @@ const App = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const trackSearch = async () => {
+      const term = debounceSearchTerm.trim().toLowerCase();
+      if (!term) return;
+
+      if (trackedSearchesRef.current.has(term)) return;
+
+      try {
+        await updateSearchCount(term);
+        trackedSearchesRef.current.add(term);
+      } catch (err) {
+        console.error("Failed to track search", err);
+      }
+    };
+
+    trackSearch();
+  }, [debounceSearchTerm]);
 
   const loadTrendingMovies = async () => {
     try {
@@ -139,6 +149,15 @@ const App = () => {
         )}
         <section className="all-movies">
           <h2>All Movies</h2>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="mb-4 rounded border p-2"
+          >
+            <option value="popularity">Popular</option>
+            <option value="rating">Top Rated</option>
+            <option value="date">Newest</option>
+          </select>
 
           {isLoading ? (
             <SpinnerEmpty />
