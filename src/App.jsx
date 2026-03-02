@@ -42,9 +42,6 @@ const App = () => {
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`
         : `${API_BASE_URL}/discover/movie?include_adult=false&language=en-US&page=${page}&sort_by=${sortMap[sortBy]}`;
-      // const endpoint = query
-      //   ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-      //   : `${API_BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -59,11 +56,6 @@ const App = () => {
         setMovieList([]);
         return;
       }
-
-      // setMovieList(data.results || []);
-      // if (query && data.results.length > 0) {
-      //   await updateSearchCount(query, data.results[0]);
-      // }
 
       setMovieList((prev) =>
         page === 1 ? data.results : [...prev, ...data.results],
@@ -103,18 +95,15 @@ const App = () => {
     }
   };
 
+  // Reset page to 1 when search or sort changes
   useEffect(() => {
     setPage(1);
-    fetchMovies(debounceSearchTerm);
   }, [debounceSearchTerm, sortBy]);
 
+  // Fetch movies whenever search, sort, or page changes
   useEffect(() => {
-    if (page > 1) fetchMovies(debounceSearchTerm);
-  }, [page]);
-
-  // useEffect(() => {
-  //   fetchMovies(debounceSearchTerm);
-  // }, [debounceSearchTerm]);
+    fetchMovies(debounceSearchTerm);
+  }, [debounceSearchTerm, sortBy, page]);
 
   useEffect(() => {
     loadTrendingMovies();
@@ -148,11 +137,11 @@ const App = () => {
           </section>
         )}
         <section className="all-movies">
-          <h2>All Movies</h2>
+          <h2 className="mb-2">All Movies</h2>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="mb-4 rounded border p-2"
+            className="mb-4 rounded border p-2 text-gray-400"
           >
             <option value="popularity">Popular</option>
             <option value="rating">Top Rated</option>
@@ -171,13 +160,17 @@ const App = () => {
             </ul>
           )}
         </section>
-        <h3>{searchTerm}</h3>
+
         <button
           onClick={() => setPage((p) => p + 1)}
-          className="mt-8 rounded bg-taupe-950 px-6 py-2 font-semibold w-1xl m-auto text-white cursor-pointer "
+          className="mt-6 rounded bg-transparent px-6 py-2 font-semibold w-1xl m-auto text-white cursor-pointer "
         >
           Load More
         </button>
+
+        <h3 className="text-white m-auto mt-6">
+          You have searched for: " {searchTerm} "
+        </h3>
       </div>
     </main>
   );
