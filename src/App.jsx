@@ -3,7 +3,7 @@ import Search from "./components/Search";
 import SpinnerEmpty from "./components/SpinnerEmpty";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
-import { updateSearchCount, getTrendingMovies } from "./appwrite.js";
+import { getTrendingMovies } from "./appwrite.js";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = import.meta.env.VITE_TMDB_API_TOKEN;
@@ -22,6 +22,8 @@ const App = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState("popularity"); // popularity | rating | date
 
   useDebounce(() => setDebounceSearchTerm(searchTerm), 700, [searchTerm]);
 
@@ -30,11 +32,20 @@ const App = () => {
     setErrorMessage("");
 
     try {
-      const endppint = query
-        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${API_BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+      const sortMap = {
+        popularity: "popularity.desc",
+        rating: "vote_average.desc",
+        date: "primary_release_date.desc",
+      };
 
-      const response = await fetch(endppint, API_OPTIONS);
+      const endpoint = query
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`
+        : `${API_BASE_URL}/discover/movie?include_adult=false&language=en-US&page=${page}&sort_by=${sortMap[sortBy]}`;
+      // const endpoint = query
+      //   ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+      //   : `${API_BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+
+      const response = await fetch(endpoint, API_OPTIONS);
 
       if (!response.ok) {
         throw new Error("Failed to fetch movies");
@@ -48,10 +59,23 @@ const App = () => {
         return;
       }
 
-      setMovieList(data.results || []);
-      if (query && data.results.length > 0) {
-        await updateSearchCount(query, data.results[0]);
-      }
+      // setMovieList(data.results || []);
+      // if (query && data.results.length > 0) {
+      //   await updateSearchCount(query, data.results[0]);
+      // }
+      <select
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value)}
+        className="mb-4 rounded border p-2"
+      >
+        <option value="popularity">Popular</option>
+        <option value="rating">Top Rated</option>
+        <option value="date">Newest</option>
+      </select>;
+
+      setMovieList((prev) =>
+        page === 1 ? data.results : [...prev, ...data.results],
+      );
     } catch (error) {
       console.error(`Error fetching movies:${error}`);
       setErrorMessage("Error fetching movies. Please try again later.");
@@ -70,8 +94,17 @@ const App = () => {
   };
 
   useEffect(() => {
+    setPage(1);
     fetchMovies(debounceSearchTerm);
-  }, [debounceSearchTerm]);
+  }, [debounceSearchTerm, sortBy]);
+
+  useEffect(() => {
+    if (page > 1) fetchMovies(debounceSearchTerm);
+  }, [page]);
+
+  // useEffect(() => {
+  //   fetchMovies(debounceSearchTerm);
+  // }, [debounceSearchTerm]);
 
   useEffect(() => {
     loadTrendingMovies();
@@ -119,7 +152,13 @@ const App = () => {
             </ul>
           )}
         </section>
-        <h1>{searchTerm}</h1>
+        <h3>{searchTerm}</h3>
+        <button
+          onClick={() => setPage((p) => p + 1)}
+          className="mt-8 rounded bg-transparent px-6 py-2 font-semibold w-1xl m-auto text-white cursor-pointer "
+        >
+          Load More
+        </button>
       </div>
     </main>
   );
