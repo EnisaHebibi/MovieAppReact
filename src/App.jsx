@@ -174,7 +174,7 @@ const App = () => {
         <h3>{searchTerm}</h3>
         <button
           onClick={() => setPage((p) => p + 1)}
-          className="mt-8 rounded bg-transparent px-6 py-2 font-semibold w-1xl m-auto text-white cursor-pointer "
+          className="mt-8 rounded bg-taupe-950 px-6 py-2 font-semibold w-1xl m-auto text-white cursor-pointer "
         >
           Load More
         </button>
