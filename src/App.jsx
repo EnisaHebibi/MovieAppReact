@@ -24,7 +24,6 @@ const App = () => {
   const [debounceSearchTerm, setDebounceSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("popularity"); // popularity | rating | date
-  const trackedSearchesRef = useRef(new Set());
 
   useDebounce(() => setDebounceSearchTerm(searchTerm), 700, [searchTerm]);
 
