@@ -67,17 +67,15 @@ const App = () => {
       setIsLoading(false);
     }
   };
-
+  // Track search term
   useEffect(() => {
     const trackSearch = async () => {
       const term = debounceSearchTerm.trim().toLowerCase();
       if (!term) return;
 
-      if (trackedSearchesRef.current.has(term)) return;
-
       try {
+        // always update database
         await updateSearchCount(term);
-        trackedSearchesRef.current.add(term);
       } catch (err) {
         console.error("Failed to track search", err);
       }
@@ -85,15 +83,6 @@ const App = () => {
 
     trackSearch();
   }, [debounceSearchTerm]);
-
-  const loadTrendingMovies = async () => {
-    try {
-      const movies = await getTrendingMovies();
-      setTrendingMovies(movies);
-    } catch (error) {
-      console.error(`Error fetching trending movies: ${error}`);
-    }
-  };
 
   // Reset page to 1 when search or sort changes
   useEffect(() => {
@@ -106,8 +95,9 @@ const App = () => {
   }, [debounceSearchTerm, sortBy, page]);
 
   useEffect(() => {
-    loadTrendingMovies();
+    setTrendingMovies();
   }, []);
+
   return (
     <main>
       <div className="pattern" />
@@ -122,7 +112,7 @@ const App = () => {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
-        {trendingMovies.length > 0 && (
+        {trendingMovies && trendingMovies.length > 0 && (
           <section className="trending">
             <h2>Trending Movies</h2>
 
