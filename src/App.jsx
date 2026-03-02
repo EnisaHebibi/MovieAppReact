@@ -67,15 +67,24 @@ const App = () => {
       setIsLoading(false);
     }
   };
-  // Track search term
   useEffect(() => {
     const trackSearch = async () => {
       const term = debounceSearchTerm.trim().toLowerCase();
       if (!term) return;
 
       try {
-        // always update database
-        await updateSearchCount(term);
+        // Fetch the first movie so Appwrite can use it
+        const endpoint = `${API_BASE_URL}/search/movie?query=${encodeURIComponent(term)}&page=1`;
+        const response = await fetch(endpoint, API_OPTIONS);
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          // Pass first movie to Appwrite
+          await updateSearchCount(term, data.results[0]);
+        } else {
+          // Still update term even if no movie found
+          await updateSearchCount(term);
+        }
       } catch (err) {
         console.error("Failed to track search", err);
       }
