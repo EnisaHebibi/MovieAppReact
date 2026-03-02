@@ -136,18 +136,17 @@ const App = () => {
             </ul>
           </section>
         )}
+        <h2 className="mb-2">All Movies</h2>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="mb-4 rounded border p-2 text-gray-400 ml-0 w-30"
+        >
+          <option value="popularity">Popular</option>
+          <option value="rating">Top Rated</option>
+          <option value="date">Newest</option>
+        </select>
         <section className="all-movies">
-          <h2 className="mb-2">All Movies</h2>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="mb-4 rounded border p-2 text-gray-400"
-          >
-            <option value="popularity">Popular</option>
-            <option value="rating">Top Rated</option>
-            <option value="date">Newest</option>
-          </select>
-
           {isLoading ? (
             <SpinnerEmpty />
           ) : errorMessage ? (
