@@ -104,7 +104,16 @@ const App = () => {
   }, [debounceSearchTerm, sortBy, page]);
 
   useEffect(() => {
-    setTrendingMovies();
+    const loadTrendingMovies = async () => {
+      try {
+        const movies = await getTrendingMovies(); // fetch from Appwrite
+        setTrendingMovies(movies); // set the state
+      } catch (error) {
+        console.error("Error fetching trending movies:", error);
+      }
+    };
+
+    loadTrendingMovies();
   }, []);
 
   return (
