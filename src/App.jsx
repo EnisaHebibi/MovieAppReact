@@ -175,7 +175,7 @@ const App = () => {
         </button>
 
         <h3 className="text-white m-auto mt-6">
-          {searchTerm ? `You have searched for: ${searchTerm}` : null}
+          {searchTerm ? `You have searched for: "${searchTerm}"` : null}
         </h3>
       </div>
     </main>
