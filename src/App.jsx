@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Search from "./components/Search";
 import SpinnerEmpty from "./components/SpinnerEmpty";
 import MovieCard from "./components/MovieCard";
